@@ -50,7 +50,7 @@ jobs:
 
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
 
-          python -m nuitka --onefile --follow-imports --lto --remove-output --output-dir="$OUTDIR" $INCLUDE_JSON "$ENTRY"
+          python -m nuitka --onefile --follow-imports --lto=yes --remove-output --output-dir="$OUTDIR" $INCLUDE_JSON "$ENTRY"
 
           ls -lah "$OUTDIR" || true
         shell: bash
