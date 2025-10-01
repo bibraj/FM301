@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.10]
+        python-version: ['3.10']
 
     steps:
       - name: Checkout repository
@@ -37,58 +37,40 @@ jobs:
       - name: Install Python build deps
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          # Install Nuitka (you can pin version if desired)
           python -m pip install nuitka
-          # install app deps if you have requirements.txt
-          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt || true; fi
         shell: bash
 
-      - name: Build with Nuitka (produce onefile binary and include JSON)
-        id: build-nuitka
+      - name: Build with Nuitka
         run: |
-          set -e
-          # Entrypoint - change if different
           ENTRY=validate_netcdf_total.py
           OUTDIR=dist
           rm -rf "$OUTDIR" build || true
           mkdir -p "$OUTDIR"
 
-          # Include the JSON data file into the binary.
-          # Format: --include-data-file=source:destination
-          # Here we put it at binary-root as cf_radial_metadata_Final.json
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
 
-          # Nuitka flags chosen to reduce size and follow imports:
-          # --onefile --follow-imports --lto --remove-output --output-dir=dist
           python -m nuitka --onefile --follow-imports --lto --remove-output --output-dir="$OUTDIR" $INCLUDE_JSON "$ENTRY"
 
           ls -lah "$OUTDIR" || true
         shell: bash
 
-      - name: Compress produced binary with UPX (if available)
+      - name: Compress with UPX
         run: |
-          set -e
           if [ -d dist ]; then
-            echo "Contents of dist:"
-            ls -lah dist || true
-            # detect the file produced inside dist (first file)
             BIN=$(ls dist | head -n1)
-            echo "Detected binary: $BIN"
+            echo "Compressing: $BIN"
             if command -v upx >/dev/null 2>&1; then
-              echo "Compressing dist/$BIN with UPX"
-              upx --best --ultra-brute "dist/$BIN" || echo "UPX failed or is unsupported for this binary"
-              ls -lah "dist/$BIN"
-            else
-              echo "UPX not found; skipping compression"
+              upx --best --ultra-brute "dist/$BIN" || echo "UPX compression failed"
             fi
-          else
-            echo "dist directory not found; nothing to compress"
+            ls -lh dist/
           fi
         shell: bash
 
-      - name: Upload build artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}
           path: dist/*
+
 
