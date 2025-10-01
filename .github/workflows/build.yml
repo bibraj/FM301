@@ -54,7 +54,10 @@ jobs:
 
           ls -lah "$OUTDIR" || true
         shell: bash
+        env:
+          NUITKA_DOWNLOADS: "1"
 
+ 
       - name: Compress with UPX
         run: |
           if [ -d dist ]; then
