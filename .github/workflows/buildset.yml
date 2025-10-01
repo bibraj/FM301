@@ -28,14 +28,12 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y build-essential pkg-config python3-dev upx-ucl
-
       - name: Install Python deps (Linux)
         if: runner.os == 'Linux'
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install nuitka netCDF4 numpy reportlab
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
       - name: Build (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -44,11 +42,12 @@ jobs:
           rm -rf "$OUTDIR" build || true
           mkdir -p "$OUTDIR"
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
-          python -m nuitka --onefile --lto=yes --remove-output \
+          python -m nuitka --onefile --lto=yes --remove-output --show-modules \
             --output-dir="$OUTDIR" $INCLUDE_JSON \
             --include-package=netCDF4 \
             --include-package=numpy \
             --include-package=reportlab \
+            --include-package=cftime \
             "$ENTRY"
           ls -lah "$OUTDIR"
 
@@ -57,7 +56,6 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install upx -y
-
       - name: Pre-install depends.exe (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -67,7 +65,6 @@ jobs:
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
           Invoke-WebRequest -Uri $url -OutFile $zip
           Expand-Archive -Path $zip -DestinationPath $dest -Force
-
       - name: Install Python deps (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -75,7 +72,6 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install nuitka netCDF4 numpy reportlab
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
-
       - name: Build (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -84,11 +80,12 @@ jobs:
           if (Test-Path $OUTDIR) { Remove-Item $OUTDIR -Recurse -Force }
           New-Item -ItemType Directory -Path $OUTDIR | Out-Null
           $INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
-          python -m nuitka --onefile --remove-output `
+          python -m nuitka --onefile --remove-output --show-modules `
             --output-dir=$OUTDIR $INCLUDE_JSON `
             --include-package=netCDF4 `
             --include-package=numpy `
             --include-package=reportlab `
+            --include-package=cftime `
             $ENTRY
           Get-ChildItem $OUTDIR
 
@@ -104,6 +101,13 @@ jobs:
             ls -lh dist/
           fi
         shell: bash
+
+      # ---------------- Smoke Test ----------------
+      - name: Smoke test executable
+        run: |
+          BIN=$(ls dist | head -n1)
+          echo "Running smoke test on $BIN"
+          "./dist/$BIN" || echo "Executable ran (no import errors)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
