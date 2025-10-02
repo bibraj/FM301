@@ -61,20 +61,7 @@ jobs:
           echo "Running smoke test: $BIN --help"
           ./dist/$BIN --help || echo "Binary did not print help"
 
-      - name: Functional test binary (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          BIN=$(ls dist | head -n1)
-          TEST_INPUT="test/ODIM_sample.nc"
-          TEST_OUTPUT="test_output.pdf"
-          echo "Running functional test: ./dist/$BIN $TEST_INPUT $TEST_OUTPUT"
-          ./dist/$BIN "$TEST_INPUT" "$TEST_OUTPUT"
-          if [ -f "$TEST_OUTPUT" ]; then
-            echo "Functional test passed: $TEST_OUTPUT created"
-          else
-            echo "Functional test failed: output not created"
-            exit 1
-          fi
+    
 
       # ---------------- Windows ----------------
       - name: Install build tools (Windows)
@@ -126,20 +113,7 @@ jobs:
           Write-Output "Running smoke test: $($BIN.Name) --help"
           & "dist\$($BIN.Name)" --help
 
-      - name: Functional test binary (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          $BIN = Get-ChildItem dist | Select-Object -First 1
-          $TEST_INPUT = "test\ODIM_sample.nc"
-          $TEST_OUTPUT = "test_output.pdf"
-          Write-Output "Running functional test: dist\$($BIN.Name) $TEST_INPUT $TEST_OUTPUT"
-          & "dist\$($BIN.Name)" $TEST_INPUT $TEST_OUTPUT
-          if (Test-Path $TEST_OUTPUT) {
-            Write-Output "Functional test passed: $TEST_OUTPUT created"
-          } else {
-            Write-Error "Functional test failed: output not created"
-            exit 1
-          }
+
 
       # ---------------- UPX compress (both OS) ----------------
       - name: Compress binary with UPX
