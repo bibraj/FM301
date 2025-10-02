@@ -61,8 +61,7 @@ jobs:
           echo "Running smoke test: $BIN --help"
           ./dist/$BIN --help || echo "Binary did not print help"
 
-    
-
+     
       # ---------------- Windows ----------------
       - name: Install build tools (Windows)
         if: runner.os == 'Windows'
@@ -71,6 +70,7 @@ jobs:
 
       - name: Pre-install depends.exe (Windows)
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
           $url = "https://dependencywalker.com/depends22_x64.zip"
           $zip = "$env:TEMP\depends.zip"
@@ -81,6 +81,7 @@ jobs:
 
       - name: Install Python deps (Windows)
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
           python -m ensurepip --upgrade
           python -m pip install --upgrade pip setuptools wheel
@@ -89,6 +90,7 @@ jobs:
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
           $ENTRY="validate_netcdf_total.py"
           $OUTDIR="dist"
@@ -108,29 +110,41 @@ jobs:
 
       - name: Smoke test binary (Windows)
         if: runner.os == 'Windows'
+        shell: pwsh
         run: |
           $BIN = Get-ChildItem dist | Select-Object -First 1
           Write-Output "Running smoke test: $($BIN.Name) --help"
-          & "dist\$($BIN.Name)" --help
+          & "$($BIN.FullName)" --help
 
-
-
-      # ---------------- UPX compress (both OS) ----------------
-      - name: Compress binary with UPX
+    
+      # ---------------- UPX compress ----------------
+      - name: Compress binary with UPX (Linux)
+        if: runner.os == 'Linux'
         run: |
           if [ -d dist ]; then
-            if [[ "$RUNNER_OS" == "Linux" ]]; then
-              BIN=$(ls dist | head -n1)
-              echo "Compressing $BIN"
-              upx --best --ultra-brute "dist/$BIN" || echo "UPX failed"
-            elif [[ "$RUNNER_OS" == "Windows" ]]; then
-              $BIN = Get-ChildItem dist | Select-Object -First 1
-              Write-Output "Compressing $($BIN.Name)"
-              & upx --best --ultra-brute "dist\$($BIN.Name)" || Write-Output "UPX failed"
-            fi
+            BIN=$(ls dist | head -n1)
+            echo "Compressing $BIN"
+            upx --best --ultra-brute "dist/$BIN" || echo "UPX failed"
             ls -lh dist/
           fi
-        shell: bash
+
+      - name: Compress binary with UPX (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (Test-Path dist) {
+            $BIN = Get-ChildItem dist | Select-Object -First 1
+            Write-Output "Compressing $($BIN.Name)"
+            & upx.exe --best --ultra-brute "$($BIN.FullName)" || Write-Output "UPX failed"
+            Get-ChildItem dist
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.os }}
+          path: dist/*
+
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
