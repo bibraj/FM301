@@ -46,6 +46,7 @@ jobs:
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
           python -m nuitka --remove-output --show-modules --follow-imports \
             --output-dir="$OUTDIR" $INCLUDE_JSON \
+            --include-module=netCDF4._netCDF4 \
             --include-package=netCDF4 \
             --include-package=numpy \
             --include-package=reportlab \
@@ -109,6 +110,7 @@ jobs:
           $INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
           python -m nuitka --remove-output --show-modules --follow-imports `
             --output-dir=$OUTDIR $INCLUDE_JSON `
+            --include-module=netCDF4._netCDF4 `
             --include-package=netCDF4 `
             --include-package=numpy `
             --include-package=reportlab `
