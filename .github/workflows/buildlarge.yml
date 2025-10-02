@@ -45,12 +45,13 @@ jobs:
           mkdir -p "$OUTDIR"
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
           python -m nuitka --onefile --lto=yes --remove-output --show-modules --follow-imports \
-            --output-dir="$OUTDIR" $INCLUDE_JSON \
             --include-package=netCDF4 \
             --include-package=numpy \
             --include-package=reportlab \
             --include-package=cftime \
-            "$ENTRY"
+            --include-package=certifi \
+            --include-package=requests \
+            --output-dir="$OUTDIR" $INCLUDE_JSON "$ENTRY"
           ls -lah "$OUTDIR"
 
       - name: Smoke test binary (Linux)
@@ -108,11 +109,13 @@ jobs:
           New-Item -ItemType Directory -Path $OUTDIR | Out-Null
           $INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
           python -m nuitka --onefile --remove-output --show-modules --follow-imports `
-            --output-dir=$OUTDIR $INCLUDE_JSON `
             --include-package=netCDF4 `
             --include-package=numpy `
             --include-package=reportlab `
             --include-package=cftime `
+            --include-package=certifi `
+            --include-package=requests `
+            --output-dir=$OUTDIR $INCLUDE_JSON `
             $ENTRY
           Get-ChildItem $OUTDIR
 
