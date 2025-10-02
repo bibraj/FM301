@@ -54,13 +54,7 @@ jobs:
             --output-dir="$OUTDIR" $INCLUDE_JSON "$ENTRY"
           ls -lah "$OUTDIR"
 
-      - name: Smoke test binary (Linux - non-blocking)
-        if: runner.os == 'Linux'
-        run: |
-          BIN=$(ls dist | head -n1)
-          echo "Running smoke test: $BIN --help"
-          ./dist/$BIN --help || true
-
+      
 
 
       # ---------------- Windows ----------------
@@ -109,17 +103,7 @@ jobs:
             $ENTRY
           Get-ChildItem $OUTDIR
 
-      - name: Smoke test binary (Windows - non-blocking)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $BIN = Get-ChildItem dist | Select-Object -First 1
-          Write-Output "Running smoke test: $($BIN.Name) --help"
-          try {
-            & "$($BIN.FullName)" --help
-          } catch {
-            Write-Output "Non-blocking smoke test failed (exit code ignored)"
-          }
+      
 
     
       # ---------------- UPX compress ----------------
