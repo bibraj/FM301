@@ -44,9 +44,8 @@ jobs:
           rm -rf "$OUTDIR" build || true
           mkdir -p "$OUTDIR"
           INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
-          python -m nuitka --remove-output --show-modules --follow-imports \
+          python -m nuitka --onefile --lto=yes --remove-output --show-modules --follow-imports \
             --output-dir="$OUTDIR" $INCLUDE_JSON \
-            --include-module=netCDF4._netCDF4 \
             --include-package=netCDF4 \
             --include-package=numpy \
             --include-package=reportlab \
@@ -108,9 +107,8 @@ jobs:
           if (Test-Path $OUTDIR) { Remove-Item $OUTDIR -Recurse -Force }
           New-Item -ItemType Directory -Path $OUTDIR | Out-Null
           $INCLUDE_JSON="--include-data-file=cf_radial_metadata_Final.json=cf_radial_metadata_Final.json"
-          python -m nuitka --remove-output --show-modules --follow-imports `
+          python -m nuitka --onefile --remove-output --show-modules --follow-imports `
             --output-dir=$OUTDIR $INCLUDE_JSON `
-            --include-module=netCDF4._netCDF4 `
             --include-package=netCDF4 `
             --include-package=numpy `
             --include-package=reportlab `
@@ -147,11 +145,11 @@ jobs:
             if [[ "$RUNNER_OS" == "Linux" ]]; then
               BIN=$(ls dist | head -n1)
               echo "Compressing $BIN"
-              upx --best "dist/$BIN" || echo "UPX failed"
+              upx --best --ultra-brute "dist/$BIN" || echo "UPX failed"
             elif [[ "$RUNNER_OS" == "Windows" ]]; then
               $BIN = Get-ChildItem dist | Select-Object -First 1
               Write-Output "Compressing $($BIN.Name)"
-              & upx --best "dist\$($BIN.Name)" || Write-Output "UPX failed"
+              & upx --best --ultra-brute "dist\$($BIN.Name)" || Write-Output "UPX failed"
             fi
             ls -lh dist/
           fi
