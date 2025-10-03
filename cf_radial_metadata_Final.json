@@ -287,7 +287,7 @@
         {
           "attribute_name": "axis",
           "attribute_datatype": "string",
-          "attribute_value": "cradial_range_coordinate"
+          "attribute_value": "radial_range_coordinate"
         },
         {
           "attribute_name": "spacing_is_constant",
@@ -390,7 +390,7 @@
         {
           "attribute_name": "axis",
           "attribute_datatype": "string",
-          "attribute_value": "cradial_azimuth_coordinate"
+          "attribute_value": "radial_azimuth_coordinate"
         }
       ]
     },
@@ -418,7 +418,7 @@
         {
           "attribute_name": "axis",
           "attribute_datatype": "string",
-          "attribute_value": "cradial_elevation_coordinate"
+          "attribute_value": "radial_elevation_coordinate"
         }
       ]
     },
@@ -878,7 +878,7 @@
       "attributes": [
        {
          "attribute_name": "standard_name",
-         "attribute_value": "radar_linear_equivalent_reflectivity_ factor_h",
+         "attribute_value": "radar_linear_equivalent_reflectivity_factor_h",
          "attribute_applicability": "Mandatory"
        },
        {
@@ -955,7 +955,7 @@
       "attributes": [
        {
          "attribute_name": "standard_name",
-         "attribute_value": "radar_linear_equivalent_reflectivity_ factor_v",
+         "attribute_value": "radar_linear_equivalent_reflectivity_factor_v",
          "attribute_applicability": "Mandatory"
        },
        {
@@ -1263,7 +1263,7 @@
     "attributes": [
       {
         "attribute_name": "standard_name",
-        "attribute_value": "radar_linear_equivalent_reflectivity_ factor_v",
+        "attribute_value": "radar_linear_equivalent_reflectivity_factor_v",
         "attribute_applicability": "Mandatory"
       },
       {
@@ -1340,7 +1340,7 @@
     "attributes": [
       {
         "attribute_name": "standard_name",
-        "attribute_value": "radial_velocity_of_scatterers_away_from_ instrument_h",
+        "attribute_value": "radial_velocity_of_scatterers_away_from_instrument_h",
         "attribute_applicability": "Mandatory"
       },
       {
@@ -1417,7 +1417,7 @@
     "attributes": [
       {
         "attribute_name": "standard_name",
-        "attribute_value": "radial_velocity_of_scatterers_away_from_ instrument_v",
+        "attribute_value": "radial_velocity_of_scatterers_away_from_instrument_v",
         "attribute_applicability": "Mandatory"
       },
       {
