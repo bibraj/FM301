@@ -441,12 +441,19 @@ def validate(json_file, nc_file, pdf_file, Sopt):
     nc.close()
     generate_pdf(results, pdf_file, section_summaries,results_data,nc_file)
     print(f"✅ Validation complete. Report saved to {pdf_file}")
-
+    
+def resource_path(filename):
+    # Nuitka (and PyInstaller compatibility) puts files in a temp folder
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, filename)
+    # Fallback: look in the script directory
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 4:
         print("Usage: python validate_netcdf.py <file.nc> <report.pdf> [f for full sweep]")
         sys.exit(1)
-    json_file = "cf_radial_metadata_Final.json"
+    json_file = resource_path("cf_radial_metadata_Final.json")
     nc_file, pdf_file = sys.argv[1], sys.argv[2]
     Sopt = sys.argv[3].lower() if len(sys.argv) == 4 else "o"  # default = "f"
 
